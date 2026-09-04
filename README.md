@@ -93,11 +93,15 @@ python build.py all                                   # 全量，产物在 dist/
 python build.py all --freq hot --limit 800            # 只要最活跃的 800 只，热门靠前
 python build.py all --exclude-st                      # 不要风险警示股
 python build.py all --code-alias                      # 追加 000001 → 平安银行
+python build.py all --stocks @watch.txt               # 只导自选股（名字/代码混写都行，保持你的顺序）
 python build.py all --source csv --csv examples/stock_names.sample.csv   # 不连库，离线试跑
 python build.py all --no-imewl                        # 不装深蓝也能出文本词库（.dat 除外）
 python build.py release --create-repo                 # 顺手建仓 + 发第一个 Release
 python build.py release --dry-run                     # 只看将执行哪些 git/gh 命令
 ```
+
+自选股清单支持股票名、`000001`、`600519.SH` 三种写法，也支持 `# 注释`；产出的 `dist/astock_words.txt`
+按你写的顺序一行一个股票名，适合逐条抄进只有「常用语」的输入法。
 
 深蓝词库转换只负责微软拼音那个二进制 `.dat`；找不到它会跳过并提示下载地址，其余格式本仓库自己产出。
 词库文件与编码规则细节见 [docs/formats.md](docs/formats.md)。
