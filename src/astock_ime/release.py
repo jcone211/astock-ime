@@ -160,8 +160,12 @@ def create_release(cwd: Path, version: str, zip_path: Path, notes: str,
     exists = subprocess.run(["gh", "release", "view", version],
                             cwd=str(cwd), capture_output=True).returncode == 0
     if exists:
+        # 同一周重跑：覆盖附件，并把标题/正文也刷新（改了文案不会被旧 release 正文冻住）
         rc, _ = run(["gh", "release", "upload", version, str(zip_path), "--clobber"],
                     cwd, dry_run)
+        run(["gh", "release", "edit", version,
+             "--title", f"A股输入法词库 {version}",
+             "--notes-file", str(notes_file)], cwd, dry_run)
     else:
         rc, _ = run(["gh", "release", "create", version, str(zip_path),
                      "--title", f"A股输入法词库 {version}",
