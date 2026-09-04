@@ -2,6 +2,9 @@
 config.json
 .env
 
+# 定时任务日志
+logs/
+
 # 生成物目录：data/ build/ dist/ 各自带一个 .gitignore，
 # 只留 .gitkeep / README.md，词库产物走 Release 附件，不进仓库。
 

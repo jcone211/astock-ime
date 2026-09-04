@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""astock-ime 顶层入口：python build.py [export|build|convert|all] [参数]
+"""astock-ime 顶层入口：python build.py [export|build|convert|all|release] [参数]
 
 为了让仓库开箱即用，这里直接把 src/ 加进 sys.path，
 不需要 pip install -e，也不需要设置 PYTHONPATH。

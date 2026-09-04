@@ -2,6 +2,7 @@
 """astock-ime 命令行入口。
 
     python build.py all                # 数据库 → 中间 txt → 各输入法词库
+    python build.py release            # 上面全部 + 打包 zip + 推送 + 建 GitHub Release
     python build.py export             # 只导数据快照
     python build.py build              # 只生成文本词库
     python build.py convert            # 只调深蓝转原生格式
@@ -20,6 +21,8 @@ from typing import Any, Dict, List
 from .config import REPO_ROOT, load_config
 from .db import fetch_hot_amounts, fetch_names, read_csv_rows, write_csv_rows
 from .imewl import TARGETS, convert as imewl_convert, find_converter, resolve_targets, verify
+from .release import create_repo_if_needed, default_version
+from .release import release as do_release
 from .phrase import (
     Entry,
     build_entries,
@@ -45,8 +48,9 @@ def _parser() -> argparse.ArgumentParser:
         description="A 股股票名 → 输入法自定义短语词库（微软拼音 / 微信 / 搜狗）",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    ap.add_argument("command", choices=["export", "build", "convert", "all"],
-                    nargs="?", default="all", help="要执行的步骤")
+    ap.add_argument("command", choices=["export", "build", "convert", "all", "release"],
+                    nargs="?", default="all",
+                    help="要执行的步骤；release = 生成 + 打包 zip + git 推送 + 建 GitHub Release")
     ap.add_argument("--config", default=None, help="配置文件路径（默认 ./config.json）")
     ap.add_argument("--source", choices=["db", "csv"], default="db", help="名称数据来源")
     ap.add_argument("--csv", default=str(DEFAULT_DATA / "stock_names.csv"),
@@ -74,8 +78,19 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--no-imewl", action="store_true", help="不调深蓝，只产出文本格式")
     c.add_argument("--imewl", default=None, help="ImeWlConverterCmd 路径（覆盖配置）")
     c.add_argument("--targets", default="",
-                   help="要导出的深蓝格式（逗号分隔，不填那么默认只导安全可用的那几个），"
+                   help="要导出的深蓝格式（逗号分隔，不填则只导默认安全的那几个），"
                         "候选：" + "、".join(str(t["format"]) for t in TARGETS))
+
+    r = ap.add_argument_group("发布（release 子命令）")
+    r.add_argument("--version", default="",
+                   help="版本号，默认按今天日期生成 vYYYY.MM.DD（同天重跑则覆盖附件）")
+    r.add_argument("--create-repo", action="store_true",
+                   help="首次发布：没有 remote 时用 gh repo create 建仓并加 origin")
+    r.add_argument("--repo-name", default="astock-ime", help="--create-repo 使用的仓库名")
+    r.add_argument("--private", action="store_true", help="--create-repo 时建私有仓")
+    r.add_argument("--skip-git", action="store_true", help="只生成 + 打包，不提交不推送")
+    r.add_argument("--skip-gh", action="store_true", help="不创建 GitHub Release")
+    r.add_argument("--dry-run", action="store_true", help="只打印将要执行的 git / gh 命令")
     return ap
 
 
@@ -216,10 +231,23 @@ def main(argv: List[str] | None = None) -> None:
     if command == "convert":
         do_convert(args, cfg)
         return
-    do_build(args, cfg)
+
+    entries = do_build(args, cfg)
     if command == "all":
         do_convert(args, cfg)
-    print("\n下一步：把 dist/ 里的文件导入输入法，见 docs/import-guide.md")
+        print("\n下一步：把 dist/ 里的文件导入输入法，见 docs/import-guide.md")
+        return
+
+    # release：供 Cherry Studio 周定时任务直接调的一条命令
+    do_convert(args, cfg)
+    stocks = len({e.code for e in entries if e.code})
+    version = args.version or default_version()
+    if args.create_repo:
+        create_repo_if_needed(REPO_ROOT, args.repo_name, args.private, args.dry_run)
+    do_release(args, REPO_ROOT, version, len(entries), stocks,
+               Path(args.dist_dir), Path(args.build_dir), REPO_ROOT / "docs")
+    print(f"\n[release] {version} 完成。普通用户只要去 Releases 下 zip，"
+          f"不用装 Python、不用连数据库")
 
 
 if __name__ == "__main__":  # pragma: no cover

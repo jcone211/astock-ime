@@ -2,9 +2,13 @@
 
 ## 1.0.0
 
-第一个版本，把「拉数据 → 出词库」这条本地脚本链整理成可复用、可回归的小项目。
+第一个版本，把「拉数据 → 出词库」这条本地脚本链整理成可复用、可回归、**能自动周更**的小项目。
 
 ### 新增
+* **每周一个 Release**：`python build.py release` 一条命令做完「生成 → 打包 zip → git 推送 →
+  `gh release create vYYYY.MM.DD`」；同一周重跑只覆盖当周附件，不会刷屏；
+  zip 里自带 `README-导入说明.txt`，普通用户不装 Python、不连数据库也能用。
+  接线方式见 `docs/automation.md`（Cherry Studio 周定时任务）。
 * **数据源改成读本地 PostgreSQL**：`stock_basic_cache.name`，支持 `direct`（psycopg2）/
   `docker`（`docker exec psql`）/ `auto` 三种连接方式；数据库密码只走环境变量。
 * **编码规则重写**（`src/astock_ime/pinyin.py`）：去掉星号 `*`、大写字母转小写、
