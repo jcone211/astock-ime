@@ -31,15 +31,14 @@ HOWTO = """A 股输入法词库 · {version}
      → 词库和自学习 → 用户自定义短语 → 管理 → 导入
    建议导入前先点一次「导出」备份你自己的短语。
 
-2) 微信输入法
-   导入文件：wechat_astock_words.txt（一行一个股票名）
-   PC：输入法设置 → 词库 → 导入本地词库
-   手机：微信输入法 App → 我的 → 词库管理 → 导入本地词库
-
-3) 搜狗输入法
+2) 搜狗输入法
    导入文件：sogou_astock.txt（注意是 GBK 编码，别另存为 UTF-8）
    属性设置 → 词库 → 导入词库
    若你的版本只有「自定义短语」入口，用 custom_phrase_astock.txt
+
+3) 只能手动逐条添加的输入法（多数手机版）
+   打开 astock_words.txt（一行一个股票名），挑你需要的抄进「常用语 / 自定义短语」；
+   需要缩写直接上屏的话，用 custom_phrase_astock.txt 里的「编码 + 词」照着填。
 
 验证：随便找个输入框敲
    payh → 平安银行     ndsd → 宁德时代     byd → 比亚迪
@@ -192,8 +191,8 @@ def release(args: argparse.Namespace, cwd: Path, version: str,
     zip_path = build_package(dist_dir, build_dir, version, entries, stocks, docs_dir)
     notes = (f"## A 股输入法词库 {version}\n\n"
              f"* 词条 **{entries:,}** 条，覆盖 **{stocks:,}** 只在市 A 股\n"
-             "* 微软拼音 `ms_pinyin_astock.dat` / 微信 `wechat_astock_words.txt` / "
-             "搜狗 `sogou_astock.txt`，附赠 Rime 与通用自定义短语格式\n"
+             "* 微软拼音 `ms_pinyin_astock.dat` / 搜狗 `sogou_astock.txt`，"
+             "另附 Rime 与通用「自定义短语」批量格式\n"
              "* 解压后先看 zip 里的 `README-导入说明.txt`\n"
              "* 编码规则：拼音首字母、去掉 `*`、大写字母转小写（`*ST美丽` → `stml`，`万科A` → `wka`）\n"
              "* 本包由周定时任务自动生成，导入步骤见 docs/import-guide.md\n")

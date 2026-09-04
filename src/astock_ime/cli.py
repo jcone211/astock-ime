@@ -19,7 +19,8 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from .config import REPO_ROOT, load_config
-from .db import fetch_hot_amounts, fetch_names, read_csv_rows, write_csv_rows
+from .db import (apply_stocks, fetch_hot_amounts, fetch_names, read_csv_rows,
+                 write_csv_rows)
 from .imewl import TARGETS, convert as imewl_convert, find_converter, resolve_targets, verify
 from .release import create_repo_if_needed, default_version
 from .release import release as do_release
@@ -28,7 +29,6 @@ from .phrase import (
     build_entries,
     imewl_safe,
     timestamp_version,
-    write_code_word_txt,
     write_custom_phrase_txt,
     write_manifest,
     write_rime_yaml,
@@ -45,7 +45,7 @@ DEFAULT_DIST = REPO_ROOT / "dist"
 def _parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
         prog="astock-ime",
-        description="A 股股票名 → 输入法自定义短语词库（微软拼音 / 微信 / 搜狗）",
+        description="A 股股票名 → 输入法自定义短语词库（微软拼音 / 搜狗）",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     ap.add_argument("command", choices=["export", "build", "convert", "all", "release"],
@@ -71,6 +71,8 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("--limit", type=int, default=None, help="只输出前 N 条（0/不填 = 全部）")
     g.add_argument("--code-alias", action="store_true",
                    help="追加「6位股票代码 → 股票名」短语，输代码也能出名字")
+    g.add_argument("--stocks", default="",
+                   help="只导自选股：逗号分隔的股票名/代码，或 @清单文件（按你写的顺序输出）")
     g.add_argument("--no-star-variants", action="store_true",
                    help="不为 *ST 股票额外生成一条去掉星号的同编码词条")
 
@@ -108,6 +110,11 @@ def load_rows(args: argparse.Namespace, cfg: Dict[str, Any]) -> List[Dict[str, A
 
 def do_build(args: argparse.Namespace, cfg: Dict[str, Any]) -> List[Entry]:
     rows = load_rows(args, cfg)
+    if args.stocks:
+        rows, missing = apply_stocks(
+            rows, args.stocks, code_field=cfg["database"].get("code_column", "ts_code"))
+        if not rows:
+            sys.exit("[错误] 自选股清单一只都没匹配上，检查名字/代码写法")
     db_cfg = cfg["database"]
     amounts = None
     if args.freq == "hot":
@@ -130,6 +137,7 @@ def do_build(args: argparse.Namespace, cfg: Dict[str, Any]) -> List[Entry]:
         else int(cfg["build"].get("max_entries", 0) or 0),
         code_alias=args.code_alias or bool(cfg["build"].get("code_alias", False)),
         star_variants=not args.no_star_variants,
+        preserve_order=bool(args.stocks),
         amounts=amounts,
     )
     if not entries:
@@ -144,8 +152,7 @@ def do_build(args: argparse.Namespace, cfg: Dict[str, Any]) -> List[Entry]:
     dist = Path(args.dist_dir)
     version = timestamp_version()
     write_sgpy_txt(dist / "sogou_astock.txt", entries)                      # 搜狗文本词库
-    write_words_txt(dist / "wechat_astock_words.txt", entries)              # 微信文本词库
-    write_code_word_txt(dist / "wechat_astock_code.txt", entries)           # 微信带编码备选
+    write_words_txt(dist / "astock_words.txt", entries)                      # 纯词表（抄写清单）
     write_custom_phrase_txt(dist / "custom_phrase_astock.txt", entries)      # 自定义短语 ms 式
     write_custom_phrase_txt(dist / "custom_phrase_astock_alt.txt", entries, style="sq")
     write_rime_yaml(dist / "astock_rime.yaml", entries, version)            # Rime（附赠）
@@ -159,6 +166,7 @@ def do_build(args: argparse.Namespace, cfg: Dict[str, Any]) -> List[Entry]:
         "strip_star_word": args.strip_star_word,
         "code_alias": args.code_alias,
         "star_variants": not args.no_star_variants,
+        "stocks": args.stocks or None,
         "version": version,
         "files": sorted(p.name for p in dist.glob("*") if p.is_file()),
     })

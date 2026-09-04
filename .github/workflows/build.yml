@@ -38,7 +38,7 @@ jobs:
         run: |
           test -s build/astock.txt
           test -s dist/sogou_astock.txt
-          test -s dist/wechat_astock_words.txt
+          test -s dist/custom_phrase_astock.txt
           # 编码里不允许出现 * 和大写字母
           ! cut -f1 build/astock.txt | grep -Eq '[A-Z*]'
           grep -q "ST" build/astock.txt

@@ -45,6 +45,7 @@ def build_entries(
     max_entries: int = 0,
     code_alias: bool = False,
     star_variants: bool = True,
+    preserve_order: bool = False,
     amounts: Optional[Dict[str, float]] = None,
 ) -> List[Entry]:
     """数据库行 → 词条列表（已去重、已按规则生成编码）。
@@ -109,6 +110,11 @@ def build_entries(
                 stats["code_alias"] += len(entries) - cnt
 
     entries.sort(key=lambda e: (-e.freq, e.key, e.word))
+    if preserve_order:                      # 自选股清单：用户写的顺序就是最终顺序
+        order = {}
+        for i, row in enumerate(rows):
+            order[str(row.get(name_field) or "").strip()] = i
+        entries.sort(key=lambda e: order.get(e.word, len(order)))
     if max_entries:
         entries = entries[:max_entries]
 
@@ -179,7 +185,8 @@ def write_self_txt(path: Path, entries: Iterable[Entry]) -> Path:
 
 
 def write_words_txt(path: Path, entries: Iterable[Entry]) -> Path:
-    """纯词表：一行一个股票名（UTF-8 带 BOM，CRLF）。微信输入法等「导入文本词库」用。"""
+    """纯词表：一行一个股票名（UTF-8 带 BOM，CRLF）。
+    给「只能逐条手动添加」的输入法当抄写清单，或自己再做筛选用。"""
     seen = set()
     lines = []
     for e in entries:
@@ -205,12 +212,6 @@ def write_custom_phrase_txt(path: Path, entries: Iterable[Entry], style: str = "
         body = "".join(f"{e.key};{e.freq},{e.word}\r\n" for e in entries)
     else:
         body = "".join(f"{e.key},{e.freq}={e.word}\r\n" for e in entries)
-    return _write(path, body, "utf-8-sig", "\n")
-
-
-def write_code_word_txt(path: Path, entries: Iterable[Entry]) -> Path:
-    """带编码文本词库：``词语<TAB>编码<TAB>词频``（UTF-8 带 BOM，LF）——LibIME/通用。"""
-    body = "".join(f"{e.word}\t{e.key}\t{e.freq}\n" for e in entries)
     return _write(path, body, "utf-8-sig", "\n")
 
 

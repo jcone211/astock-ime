@@ -13,13 +13,13 @@
   `docker`（`docker exec psql`）/ `auto` 三种连接方式；数据库密码只走环境变量。
 * **编码规则重写**（`src/astock_ime/pinyin.py`）：去掉星号 `*`、大写字母转小写、
   整词拼音首字母、符号忽略、`^[a-z0-9]{2,16}$` 校验；配套 12 个单元测试。
-* **一家命令产出三家词库**：微软拼音（`.dat` / `.xml`）、微信输入法（纯词表 / 带编码词表）、
-  搜狗（GBK 文本词库），外加通用「自定义短语」两种写法与 Rime 词库。
+* **一家命令产出多套词库**：微软拼音（`.dat` / `.xml`）、搜狗（GBK 文本词库），
+  外加通用「自定义短语」两种写法、纯词表与 Rime 词库。
 * **`verify` 回读校验**：转换完把产物再读一遍比对条数，杜绝「转换完成但其实丢词」。
 * 可选能力：`--freq hot`（按近 N 日成交额加权）、`--limit`、`--exclude-st`、
   `--code-alias`（输 6 位代码出股票名）、`--strip-star-word`、`--no-imewl`。
 * 离线通道 `--source csv`，CI（GitHub Actions）用它跑单测 + 构建 + 上传 artifact，全程不联网。
-* 文档：`docs/import-guide.md`（三家导入步骤 + 回滚 + FAQ）、`docs/formats.md`（行格式与验证结论）。
+* 文档：`docs/import-guide.md`（导入步骤 + 回滚 + FAQ）、`docs/formats.md`（行格式与验证结论）。
 
 ### 修复（相对旧流程）
 * `*ST美丽` 这类名称的编码从 `*STml` 变成 `stml`：旧编码会被深蓝词库转换在导入阶段

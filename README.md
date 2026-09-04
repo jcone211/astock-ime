@@ -2,7 +2,7 @@
 
 A 股股票名的**输入法自定义短语词库**：敲 `payh` 出「平安银行」，敲 `ndsd` 出「宁德时代」，敲 `byd` 出「比亚迪」。
 
-覆盖 Win10/11 自带**微软拼音**、**微信输入法**、**搜狗输入法**（附赠 Rime / 通用自定义短语格式）。
+覆盖 Win10/11 自带的**微软拼音**与**搜狗输入法**（附赠 Rime / 通用「自定义短语」批量格式）。
 **每周一个 Release**，下 zip 解压导入就行——不用装 Python，也不用连数据库。
 
 ![license](https://img.shields.io/badge/license-MIT-green.svg)
@@ -15,11 +15,11 @@ A 股股票名的**输入法自定义短语词库**：敲 `payh` 出「平安银
 
 👉 **[Releases](https://github.com/jcone211/astock-ime/releases/latest)** 下载最新的 `astock-ime-vYYYY.MM.DD.zip`，解压后按你用的输入法导入**一个文件**：
 
-| 输入法 | 导入这个文件 | 在哪导入 |
+| 你用的输入法 | 导入这个文件 | 在哪导入 |
 |---|---|---|
 | **微软拼音**（Win10/11 自带） | `ms_pinyin_astock.dat` | 右下角微软输入法右键点击 → 词库和自学习 → 用户自定义短语 → 导入 |
-| **微信输入法** | `wechat_astock_words.txt` | 输入法设置 → 词库 → 导入本地词库（手机端同） |
 | **搜狗输入法** | `sogou_astock.txt`（GBK，别另存为 UTF-8） | 属性设置 → 词库 → 导入词库；没有该入口就用 `custom_phrase_astock.txt` |
+| 只能手动逐条添加的（多数手机版） | `astock_words.txt` | 先用 `--stocks` 收成自选股小清单再抄（见 §3） |
 
 zip 里的 `README-导入说明.txt` 是同一份说明的纯文本版；细节（回滚、手机端、常见问题）见
 [docs/import-guide.md](docs/import-guide.md)。

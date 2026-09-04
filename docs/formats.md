@@ -30,8 +30,7 @@ wka	1	万科A
 | `ms_pinyin_astock.dat` | Win10/11 微软拼音（用户自定义短语） | 二进制 `mschxudp` | - | ✅ | 5552/5552 ✅ |
 | `ms_pinyin_astock.xml` | 旧版微软拼音 / 必应拼音词库 | XML `dctx` | UTF-8 BOM | ✅ | 5552/5552 ✅ |
 | `sogou_astock.txt` | 搜狗拼音（文本词库导入） | `'编码 词语` | GBK | ❌（自带） | 5552 条可读 ✅ |
-| `wechat_astock_words.txt` | 微信输入法（导入本地词库） | 一行一个股票名 | UTF-8 BOM | ❌（自带） | 5552 条可读 ✅ |
-| `wechat_astock_code.txt` | 微信输入法（带编码导入时优先用） | `词语<TAB>编码<TAB>词频` | UTF-8 BOM | ❌（自带） | - |
+| `astock_words.txt` | 纯词表（手动逐条录入时当抄写清单） | 一行一个股票名 | UTF-8 BOM | ❌（自带） | 5552 条可读 ✅ |
 | `custom_phrase_astock.txt` | 通用「自定义短语」批量文件 | `编码,词频=词语` | UTF-8 BOM | ❌（自带） | - |
 | `custom_phrase_astock_alt.txt` | 同上，另一种历史写法 | `编码;词频,词语` | UTF-8 BOM | ❌（自带） | - |
 | `astock_rime.yaml` | Rime 中州韵（小狼毫/鼠须管，附赠） | Rime table_txt | UTF-8 | ❌（自带） | - |
@@ -44,15 +43,10 @@ wka	1	万科A
 'abhw 安邦护卫
 'abl 艾布鲁
 
-# wechat_astock_words.txt
+# astock_words.txt
 艾艾精工
 安邦护卫
 艾布鲁
-
-# wechat_astock_code.txt
-艾艾精工	aajg	1
-安邦护卫	abhw	1
-艾布鲁	abl	1
 
 # custom_phrase_astock.txt / _alt.txt
 aajg,1=艾艾精工

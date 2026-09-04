@@ -14,10 +14,11 @@
 from __future__ import annotations
 
 import csv
+import re
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 NAME_COL = "name"
 
@@ -176,6 +177,60 @@ def fetch_hot_amounts(db_cfg: Dict[str, Any], days: int = 20) -> Optional[Dict[s
         except Exception:  # noqa: BLE001
             continue
     return None
+
+
+# ---------------------------------------------------------------- 自选股清单
+def normalize_token(token: str) -> str:
+    """股票名/代码归一：去空白与星号、转小写，便于用户随手写 平安银行 / 000001 / 600519.SH。"""
+    return re.sub(r"[\s*＊]", "", str(token)).lower()
+
+
+def parse_stocks(spec: str) -> List[str]:
+    """解析 --stocks：支持 `a,b,c`、换行分隔，以及 `@watchlist.txt` 文件（行内可用 # 注释）。"""
+    text = (spec or "").strip()
+    if text.startswith("@"):
+        path = Path(text[1:]).expanduser()
+        if not path.exists():
+            raise DataSourceError(f"自选股清单文件不存在：{path}")
+        text = path.read_text(encoding="utf-8-sig")
+    items: List[str] = []
+    for chunk in re.split(r"[,，、;；\n\r]+", text):
+        chunk = chunk.split("#")[0].strip()
+        if chunk:
+            items.append(chunk)
+    return items
+
+
+def apply_stocks(rows: List[Dict[str, Any]], spec: str,
+                 code_field: str = "ts_code",
+                 name_field: str = NAME_COL) -> Tuple[List[Dict[str, Any]], List[str]]:
+    """按自选股清单过滤数据行，**保持用户书写顺序**（逐条录入时这个顺序最有用）。
+
+    返回 (命中的行, 没匹配上的关键词)。
+    """
+    wanted = parse_stocks(spec)
+    index: Dict[str, Dict[str, Any]] = {}
+    for row in rows:
+        keys = {normalize_token(str(row.get(name_field) or ""))}
+        code = str(row.get(code_field) or "")
+        keys |= {normalize_token(code), normalize_token(code.split(".")[0])}
+        for key in keys:
+            if key:
+                index.setdefault(key, row)
+
+    hit: List[Dict[str, Any]] = []
+    missing: List[str] = []
+    for token in wanted:
+        row = index.get(normalize_token(token))
+        if row is None:
+            missing.append(token)
+        elif row not in hit:
+            hit.append(row)
+    print(f"[stocks] 清单 {len(wanted)} 项 → 命中 {len(hit)} 只，未匹配 {len(missing)} 项")
+    if missing:
+        print("[stocks] 没匹配上的关键词：" + "、".join(missing[:12])
+              + (" …" if len(missing) > 12 else ""))
+    return hit, missing
 
 
 # ---------------------------------------------------------------- CSV 通道
