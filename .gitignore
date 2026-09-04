@@ -1,0 +1,20 @@
+# 本地配置与密钥
+config.json
+.env
+
+# 生成物目录：data/ build/ dist/ 各自带一个 .gitignore，
+# 只留 .gitkeep / README.md，词库产物走 Release 附件，不进仓库。
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

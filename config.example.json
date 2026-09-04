@@ -1,0 +1,36 @@
+{
+  "database": {
+    "access": "auto",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dbname": "stock",
+    "user": "postgres",
+    "password": "",
+    "docker_container": "my-postgres",
+    "table": "stock_basic_cache",
+    "name_column": "name",
+    "code_column": "ts_code",
+    "industry_column": "industry",
+    "delisted_column": "dead_tag",
+    "exclude_delisted": true,
+    "where": "",
+    "order_by": "ts_code",
+    "hot": {
+      "table": "a_share_daily",
+      "code_column": "code",
+      "amount_column": "amount",
+      "date_column": "date"
+    }
+  },
+  "build": {
+    "phrase_rank": 1,
+    "strip_star_in_word": false,
+    "exclude_st": false,
+    "min_key_len": 2,
+    "max_entries": 0,
+    "code_alias": false
+  },
+  "tools": {
+    "imewl_converter": "D:/tools/imewlconverter_win-x64/cli/ImeWlConverterCmd.exe"
+  }
+}

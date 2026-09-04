@@ -1,0 +1,52 @@
+name: build
+
+# 不依赖数据库、也不碰 Tushare：CI 只跑离线样例 CSV
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pypinyin   # CI 不装 psycopg2，走 --source csv
+
+      - name: Unit tests（编码规则：去 * / 大写转小写 / 多音字）
+        run: python -m unittest discover -s tests -v
+
+      - name: Build lexicon from sample CSV
+        run: >
+          python build.py all --source csv --csv examples/stock_names.sample.csv
+          --no-imewl
+
+      - name: Smoke check
+        run: |
+          test -s build/astock.txt
+          test -s dist/sogou_astock.txt
+          test -s dist/wechat_astock_words.txt
+          # 编码里不允许出现 * 和大写字母
+          ! cut -f1 build/astock.txt | grep -Eq '[A-Z*]'
+          grep -q "ST" build/astock.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astock-ime-py${{ matrix.python-version }}
+          path: |
+            build/astock.txt
+            dist/
+          if-no-files-found: error

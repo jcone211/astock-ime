@@ -1,0 +1,16 @@
+# 统一换行：脚本与文档按 LF，Windows 侧的 ps1 用 CRLF
+* text=auto eol=lf
+*.sh    text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.sql   text eol=lf
+*.yml   text eol=lf
+*.ps1   text eol=crlf
+
+# 生成的词库不参与 diff（体积大、且是二进制/GBK）
+dist/*.dat   binary
+dist/*.scel  binary
+dist/*.txt   -diff linguist-generated
+build/*      -diff linguist-generated
+examples/*.csv text eol=crlf
