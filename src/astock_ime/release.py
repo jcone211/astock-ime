@@ -36,6 +36,10 @@ HOWTO = """A 股输入法词库 · {version}
    把 custom_phrase_astock.txt 的内容整体替换进 PhraseEdit.txt，保存即生效。
    动手前先把原来的 PhraseEdit.txt 备份一份，方便回滚。
 
+暂不支持：微信输入法、讯飞输入法
+   截至 2026.09.04，这两家的「自定义短语 / 常用语」只能手动逐条添加，
+   没有批量导入配置文件的入口，所以本包里没有它们的格式。
+
 验证：随便找个输入框敲
    payh → 平安银行     ndsd → 宁德时代     byd → 比亚迪
    wka  → 万科A        stml → ST美丽      tclkj → TCL科技
@@ -194,6 +198,7 @@ def release(args: argparse.Namespace, cwd: Path, version: str,
              "* 微软拼音：导入 `ms_pinyin_astock.dat`；"
              "搜狗：用 `custom_phrase_astock.txt` 替换 PhraseEdit.txt\n"
              "* 另附旧版微软拼音 `.xml` 词库与 Rime 词库\n"
+             "* 暂不支持：微信输入法、讯飞输入法（截至 2026.09.04，二者没有自定义短语批量导入入口）\n"
              "* 解压后先看 zip 里的 `README-导入说明.txt`\n"
              "* 编码规则：拼音首字母、去掉 `*`、大写字母转小写（`*ST美丽` → `stml`，`万科A` → `wka`）\n"
              "* 本包由周定时任务自动生成，导入步骤见 docs/import-guide.md\n")
