@@ -29,28 +29,16 @@ wka	1	万科A
 |---|---|---|---|---|---|
 | `ms_pinyin_astock.dat` | Win10/11 微软拼音（用户自定义短语） | 二进制 `mschxudp` | - | ✅ | 5552/5552 ✅ |
 | `ms_pinyin_astock.xml` | 旧版微软拼音 / 必应拼音词库 | XML `dctx` | UTF-8 BOM | ✅ | 5552/5552 ✅ |
-| `sogou_astock.txt` | 搜狗拼音（文本词库导入） | `'编码 词语` | GBK | ❌（自带） | 5552 条可读 ✅ |
-| `astock_words.txt` | 纯词表（手动逐条录入时当抄写清单） | 一行一个股票名 | UTF-8 BOM | ❌（自带） | 5552 条可读 ✅ |
-| `custom_phrase_astock.txt` | 通用「自定义短语」批量文件 | `编码,词频=词语` | UTF-8 BOM | ❌（自带） | - |
-| `custom_phrase_astock_alt.txt` | 同上，另一种历史写法 | `编码;词频,词语` | UTF-8 BOM | ❌（自带） | - |
+| `custom_phrase_astock.txt` | 搜狗 · 自定义短语（内容直接替换 `PhraseEdit.txt`） | `编码,词频=词语` | UTF-8 BOM | ❌（自带） | - |
 | `astock_rime.yaml` | Rime 中州韵（小狼毫/鼠须管，附赠） | Rime table_txt | UTF-8 | ❌（自带） | - |
 
 样例（各取前三行）：
 
 ```text
-# sogou_astock.txt（GBK）
-'aajg 艾艾精工
-'abhw 安邦护卫
-'abl 艾布鲁
-
-# astock_words.txt
-艾艾精工
-安邦护卫
-艾布鲁
-
-# custom_phrase_astock.txt / _alt.txt
+# custom_phrase_astock.txt   （搜狗：内容整体替换 PhraseEdit.txt）
 aajg,1=艾艾精工
-aajg;1,艾艾精工
+abhw,1=安邦护卫
+abl,1=艾布鲁
 
 # astock_rime.yaml
 ---
@@ -137,6 +125,6 @@ ImeWlConverterCmd.exe ../astock.dat -i win10mspy -o rime -O dump.txt
 
 所以默认 **不导 scel**（见 `src/astock_ime/imewl.py: TARGETS` 里 `default: False`）。
 想用 `--targets scel` 强行导也可以，但请先跑一次 `all` 看 `[verify]` 那行的回读条数。
-搜狗请走 `sogou_astock.txt`（文本词库）或「自定义短语」批量文件。
+搜狗也不需要细胞词库：走「自定义短语」→ 用 `custom_phrase_astock.txt` 替换 `PhraseEdit.txt` 就行。
 
 > 教训就是 `verify` 这一步的由来：**任何"转换完成"都不作数，回读条数对上才算数。**

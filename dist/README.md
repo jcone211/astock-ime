@@ -10,10 +10,9 @@
 ```text
 astock-ime-v2026.09.04/
 ├── README-导入说明.txt        ← 普通人看这一份就够
-├── ms_pinyin_astock.dat       ← 微软拼音
-├── sogou_astock.txt           ← 搜狗（GBK）
-├── astock_words.txt           ← 纯词表（手动录入时照着抄）
-├── ...                        ← 其余备用格式
+├── ms_pinyin_astock.dat       ← 微软拼音（用户自定义短语）
+├── custom_phrase_astock.txt   ← 搜狗（内容替换 PhraseEdit.txt）
+├── ...                        ← 旧版微软拼音 .xml、Rime 等备用格式
 └── meta/                      ← manifest、转换/回读报告、完整导入指南
 ```
 
@@ -23,10 +22,7 @@ astock-ime-v2026.09.04/
 |---|---|
 | `ms_pinyin_astock.dat` | Win10/11 微软拼音 · 用户自定义短语（导入即用） |
 | `ms_pinyin_astock.xml` | 旧版微软拼音 / 必应拼音 |
-| `sogou_astock.txt` | 搜狗拼音 · 文本词库导入（**GBK**，别另存为 UTF-8） |
-| `astock_words.txt` | 纯词表 · 只能逐条手动添加时照着抄（配 `--stocks` 收成自选股清单） |
-| `custom_phrase_astock.txt` | 通用「自定义短语」批量文件（`编码,词频=词语`） |
-| `custom_phrase_astock_alt.txt` | 同上，另一种写法（`编码;词频,词语`） |
+| `custom_phrase_astock.txt` | 搜狗 · 设置 → 输入 → 自定义短语 → 直接编辑配置文件，用本文件内容整体替换 `PhraseEdit.txt`（行格式 `编码,词频=词语`） |
 | `astock_rime.yaml` | Rime 中州韵（小狼毫 / 鼠须管） |
 | `conversion_report.json` | 上一次深蓝转换 + 回读校验的详细结果（排障用） |
 

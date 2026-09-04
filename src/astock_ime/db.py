@@ -204,7 +204,7 @@ def parse_stocks(spec: str) -> List[str]:
 def apply_stocks(rows: List[Dict[str, Any]], spec: str,
                  code_field: str = "ts_code",
                  name_field: str = NAME_COL) -> Tuple[List[Dict[str, Any]], List[str]]:
-    """按自选股清单过滤数据行，**保持用户书写顺序**（逐条录入时这个顺序最有用）。
+    """按自选股清单过滤数据行，**保持用户书写顺序**（自选股在前的词库更好核对）。
 
     返回 (命中的行, 没匹配上的关键词)。
     """

@@ -33,8 +33,6 @@ from .phrase import (
     write_manifest,
     write_rime_yaml,
     write_self_txt,
-    write_sgpy_txt,
-    write_words_txt,
 )
 
 DEFAULT_DATA = REPO_ROOT / "data"
@@ -151,10 +149,8 @@ def do_build(args: argparse.Namespace, cfg: Dict[str, Any]) -> List[Entry]:
 
     dist = Path(args.dist_dir)
     version = timestamp_version()
-    write_sgpy_txt(dist / "sogou_astock.txt", entries)                      # 搜狗文本词库
-    write_words_txt(dist / "astock_words.txt", entries)                      # 纯词表（抄写清单）
-    write_custom_phrase_txt(dist / "custom_phrase_astock.txt", entries)      # 自定义短语 ms 式
-    write_custom_phrase_txt(dist / "custom_phrase_astock_alt.txt", entries, style="sq")
+    # 搜狗等输入法：内容直接替换 PhraseEdit.txt 即可
+    write_custom_phrase_txt(dist / "custom_phrase_astock.txt", entries)
     write_rime_yaml(dist / "astock_rime.yaml", entries, version)            # Rime（附赠）
 
     report(entries)

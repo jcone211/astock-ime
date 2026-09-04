@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """调用「深蓝词库转换」生成各输入法原生词库（.dat / .scel 等二进制格式）。
 
-文本类格式（纯词表、搜狗 txt、通用自定义短语）本仓库自己就能产出，
-深蓝只负责它擅长的原生格式；找不到深蓝时全部跳过并给出提示，不影响主流程。
+文本类格式（自定义短语、Rime）本仓库自己就能产出，
+深蓝只负责它擅长的原生二进制格式；找不到深蓝时全部跳过并给出提示，不影响主流程。
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ TARGETS: Tuple[Dict[str, object], ...] = (
     {"format": "mspy", "file": "ms_pinyin_astock.xml", "default": True,
      "desc": "旧版微软拼音 / 必应拼音的词库 XML"},
     {"format": "scel", "file": "astock.scel", "default": False,
-     "desc": "搜狗细胞词库——实测深蓝 3.4 只写表头（5552 条回读只有 2 条），默认不导"},
+     "desc": "细胞词库——实测深蓝 3.4 只写表头（5552 条回读只有 2 条），且搜狗走自定义短语就够，默认不导"},
     {"format": "win10mspyss", "file": "ms_pinyin_astock_ss.dat", "default": False,
      "desc": "微软拼音自学习词库（会污染你的上屏习惯，慎用）"},
 )

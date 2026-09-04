@@ -184,34 +184,13 @@ def write_self_txt(path: Path, entries: Iterable[Entry]) -> Path:
     return _write(path, body, "utf-8", "\n")
 
 
-def write_words_txt(path: Path, entries: Iterable[Entry]) -> Path:
-    """纯词表：一行一个股票名（UTF-8 带 BOM，CRLF）。
-    给「只能逐条手动添加」的输入法当抄写清单，或自己再做筛选用。"""
-    seen = set()
-    lines = []
-    for e in entries:
-        if e.word not in seen:
-            seen.add(e.word)
-            lines.append(e.word)
-    return _write(path, "\r\n".join(lines) + "\r\n", "utf-8-sig", "\n")
+def write_custom_phrase_txt(path: Path, entries: Iterable[Entry]) -> Path:
+    """「自定义短语」文本（UTF-8 带 BOM，CRLF）：每行 ``编码,词频=词语``。
 
-
-def write_sgpy_txt(path: Path, entries: Iterable[Entry]) -> Path:
-    """搜狗拼音文本词库：``'编码 词语``（GBK，CRLF）——深蓝 sgpy 格式同源。"""
-    body = "".join(f"'{e.key} {e.word}\r\n" for e in entries)
-    return _write(path, body, "gbk", "\n")
-
-
-def write_custom_phrase_txt(path: Path, entries: Iterable[Entry], style: str = "ms") -> Path:
-    """「用户自定义短语」文本（UTF-8 带 BOM，CRLF）。
-
-    ``style="ms"`` → ``编码,词频=词语``；``style="sq"`` → ``编码;词频,词语``。
-    不同输入法（甚至同一输入法的新旧版本）只认其中一种，所以两份都备好。
+    搜狗输入法：设置 → 输入 → 自定义短语 → 「直接编辑配置文件」，
+    把本文件内容整体替换进 PhraseEdit.txt 即可（其它带同类配置文件的输入法同理）。
     """
-    if style == "sq":
-        body = "".join(f"{e.key};{e.freq},{e.word}\r\n" for e in entries)
-    else:
-        body = "".join(f"{e.key},{e.freq}={e.word}\r\n" for e in entries)
+    body = "".join(f"{e.key},{e.freq}={e.word}\r\n" for e in entries)
     return _write(path, body, "utf-8-sig", "\n")
 
 

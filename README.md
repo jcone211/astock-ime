@@ -2,7 +2,7 @@
 
 A 股股票名的**输入法自定义短语词库**：敲 `payh` 出「平安银行」，敲 `ndsd` 出「宁德时代」，敲 `byd` 出「比亚迪」。
 
-覆盖 Win10/11 自带的**微软拼音**与**搜狗输入法**（附赠 Rime / 通用「自定义短语」批量格式）。
+覆盖 Win10/11 自带的**微软拼音**与**搜狗输入法**（另附旧版微软拼音 `.xml` 词库与 Rime 词库）。
 **每周一个 Release**，下 zip 解压导入就行——不用装 Python，也不用连数据库。
 
 ![license](https://img.shields.io/badge/license-MIT-green.svg)
@@ -18,8 +18,7 @@ A 股股票名的**输入法自定义短语词库**：敲 `payh` 出「平安银
 | 你用的输入法 | 导入这个文件 | 在哪导入 |
 |---|---|---|
 | **微软拼音**（Win10/11 自带） | `ms_pinyin_astock.dat` | 右下角微软输入法右键点击 → 词库和自学习 → 用户自定义短语 → 导入 |
-| **搜狗输入法** | `sogou_astock.txt`（GBK，别另存为 UTF-8） | 属性设置 → 词库 → 导入词库；没有该入口就用 `custom_phrase_astock.txt` |
-| 只有「常用语」/逐条手动添加的（多数手机版） | `astock_words.txt` 或 `custom_phrase_astock.txt` | 搜到需要的股票名，一条一条加进去；自己跑的话用 `--stocks` 先缩成自选股（见 §3.3） |
+| **搜狗输入法** | `custom_phrase_astock.txt` | 设置 → 输入 → 自定义短语 → 直接编辑配置文件 → 用该文件内容整体替换 `PhraseEdit.txt` |
 
 zip 里的 `README-导入说明.txt` 是同一份说明的纯文本版；细节（回滚、手机端、常见问题）见
 [docs/import-guide.md](docs/import-guide.md)。
@@ -100,8 +99,7 @@ python build.py release --create-repo                 # 顺手建仓 + 发第一
 python build.py release --dry-run                     # 只看将执行哪些 git/gh 命令
 ```
 
-自选股清单支持股票名、`000001`、`600519.SH` 三种写法，也支持 `# 注释`；产出的 `dist/astock_words.txt`
-按你写的顺序一行一个股票名，适合逐条抄进只有「常用语」的输入法。
+自选股清单支持股票名、`000001`、`600519.SH` 三种写法，也支持 `@文件` 与 `# 注释`，输出保持你书写的顺序。
 
 深蓝词库转换只负责微软拼音那个二进制 `.dat`；找不到它会跳过并提示下载地址，其余格式本仓库自己产出。
 词库文件与编码规则细节见 [docs/formats.md](docs/formats.md)。
