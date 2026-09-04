@@ -49,6 +49,20 @@ HOWTO = """A 股输入法词库 · {version}
 """
 
 
+def lexicon_fingerprint(build_dir: Path) -> Tuple[str, bool]:
+    """给 build/astock.txt 算指纹，和上次比对：判断这一周的词库内容到底变没变。"""
+    import hashlib
+
+    src = build_dir / "astock.txt"
+    if not src.exists():
+        return "", False
+    digest = hashlib.sha256(src.read_bytes()).hexdigest()[:12]
+    stamp = build_dir / "lexicon_hash"
+    old = stamp.read_text(encoding="utf-8").strip() if stamp.exists() else ""
+    stamp.write_text(digest + "\n", encoding="utf-8", newline="\n")
+    return digest, (digest != old)
+
+
 def default_version() -> str:
     """版本号规则：vYYYY.MM.DD（一周一个 release，同天重跑覆盖附件）。"""
     return "v" + date.today().strftime("%Y.%m.%d")
@@ -118,7 +132,8 @@ def has_remote(cwd: Path) -> bool:
     return bool(proc.stdout.decode("utf-8", "ignore").split())
 
 
-def commit_and_push(cwd: Path, version: str, entries: int, dry_run: bool) -> bool:
+def commit_and_push(cwd: Path, version: str, entries: int, dry_run: bool,
+                    lexicon_changed: bool = True) -> bool:
     """提交源码改动并推送。返回是否真的推送过（无改动也推，保证远端最新）。"""
     if not git_is_repo(cwd):
         print("[git] 这里不是 git 仓库，跳过提交（先 git init / gh repo create）")
@@ -127,8 +142,12 @@ def commit_and_push(cwd: Path, version: str, entries: int, dry_run: bool) -> boo
     # dry-run 时 git add 没真跑，这里直接当作有改动，把 commit 命令也打印出来
     dirty = True if dry_run else (
         subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=str(cwd)).returncode != 0)
-    message = (f"chore(lexicon): {version} 全量重建（{entries} 条词条）" if dirty
-               else f"chore(release): {version}")
+    if not dirty:
+        message = f"chore(release): {version}（词库无变化，仅刷新 release）"
+    elif lexicon_changed:
+        message = f"chore(lexicon): {version} 重建词库（{entries} 条词条）"
+    else:
+        message = f"chore(lexicon): {version}（词库内容未变，改动在文档/配置）"
     if dirty:
         rc, _ = run(["git", "commit", "-m", message], cwd, dry_run)
         if rc:
@@ -203,8 +222,10 @@ def release(args: argparse.Namespace, cwd: Path, version: str,
              "* 编码规则：拼音首字母、去掉 `*`、大写字母转小写（`*ST美丽` → `stml`，`万科A` → `wka`）\n"
              "* 本包由周定时任务自动生成，导入步骤见 docs/import-guide.md\n")
 
+    digest, lexicon_changed = lexicon_fingerprint(build_dir)
+    print(f"[release] 词库指纹 {digest or '未知'}（{'有变化' if lexicon_changed else '与上次一致'}）")
     if not args.skip_git:
-        pushed = commit_and_push(cwd, version, entries, args.dry_run)
+        pushed = commit_and_push(cwd, version, entries, args.dry_run, lexicon_changed)
         if not pushed and not args.skip_gh:
             print("[release] 推送未成功，暂不发布 release（避免 tag 指向旧提交）")
             return zip_path
