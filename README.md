@@ -71,14 +71,14 @@ python build.py all                    # Windows 也可以用 .\run.ps1 / ./run.
 
 ```mermaid
 flowchart LR
-    TS[Tushare 同步任务<br/>每周三 / 周五全量] --> DB[(PostgreSQL<br/>stock.stock_basic_cache)]
-    DB -->|SELECT name,ts_code| EX[export<br/>data/stock_names.csv]
-    EX --> BU[build<br/>编码 + 去重 + 排序]
-    BU --> M1[build/astock.txt<br/>母本]
-    BU --> TXT[dist/*.txt<br/>搜狗 / 微信 / 通用短语 / Rime]
-    M1 -->|词面清洗版| IME[convert<br/>深蓝词库转换]
-    IME --> BIN[dist/ms_pinyin_astock.dat<br/>dist/ms_pinyin_astock.xml]
-    BIN --> CHK[verify 回读校验<br/>条数对上才算成功]
+    TS["Tushare 同步任务<br/>每周三 / 周五全量"] --> DB[("PostgreSQL<br/>stock.stock_basic_cache")]
+    DB -->|"SELECT name, ts_code"| EX["export<br/>data/stock_names.csv"]
+    EX --> BU["build<br/>编码 + 去重 + 排序"]
+    BU --> M1["build/astock.txt<br/>母本 + 词面清洗版"]
+    BU --> TXT["dist/*.txt<br/>微信 / 搜狗 / 通用短语 / Rime"]
+    M1 --> IME["convert<br/>深蓝词库转换（可选）"]
+    IME --> BIN["dist/ms_pinyin_astock.dat<br/>dist/ms_pinyin_astock.xml"]
+    BIN --> CHK["verify<br/>回读校验：条数对上才算成功"]
     TXT --> CHK
 ```
 
@@ -163,6 +163,7 @@ astock-ime/
 ├── config.example.json         # 数据库 / 构建 / 工具路径配置模板
 ├── requirements.txt            # pypinyin + psycopg2-binary
 ├── run.ps1 / run.sh            # 一键脚本
+├── CHANGELOG.md                # 相对旧流程的改动清单
 ├── sql/names.sql               # 取数 SQL 模板（默认由代码按配置拼装）
 ├── src/astock_ime/
 │   ├── pinyin.py               # ★ 名称 → 首字母（去 *、大写转小写、整词注音）
@@ -207,8 +208,25 @@ A：两个高频原因——① `sogou_astock.txt` 是 **GBK**，别用 UTF-8 �
 
 * 只覆盖 A 股股票简称（`stock_basic_cache` 里有什么就编什么），不含港股/美股/基金/转债；
 * 多音字取 pypinyin 的整词最可能读音，同一个字在极少数票名里可能和你直觉不符；
-* 微软拼音的 `.dat` 依赖[深蓝词库转换](https://github.com/studyzy/imewlconverter)（Apache-2.0，本机调用，不联网）；
+* 微软拼音的 `.dat` 依赖[深蓝词库转换](https://github.com/studyzy/imewlconverter)（开源工具，本机调用、不联网，具体许可证以其仓库为准）；
 * 深蓝 3.4 的 `.scel` 导出有损，所以搜狗走文本词库/自定义短语路线（见 formats.md 第 5 节）。
+
+## 推到自己的 GitHub
+
+本地仓库已经初始化好（`git init` + 首次提交已完成），推上去只差两步：
+
+```bash
+git remote add origin git@github.com:<你的用户名>/astock-ime.git
+git push -u origin main
+```
+
+词库产物默认不进 git（`data/ build/ dist/` 都只留 `.gitkeep` 与 README）；
+想让别人直接下载现成词库，就把 `dist/` 打包挂到 Release：
+
+```bash
+python build.py all
+cd dist && zip -r ../astock-ime-$(date +%Y%m%d).zip . && cd ..
+```
 
 ## License & 免责声明
 
