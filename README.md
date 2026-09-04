@@ -19,7 +19,7 @@ A 股股票名的**输入法自定义短语词库**：敲 `payh` 出「平安银
 |---|---|---|
 | **微软拼音**（Win10/11 自带） | `ms_pinyin_astock.dat` | 右下角微软输入法右键点击 → 词库和自学习 → 用户自定义短语 → 导入 |
 | **搜狗输入法** | `sogou_astock.txt`（GBK，别另存为 UTF-8） | 属性设置 → 词库 → 导入词库；没有该入口就用 `custom_phrase_astock.txt` |
-| 只能手动逐条添加的（多数手机版） | `astock_words.txt` | 先用 `--stocks` 收成自选股小清单再抄（见 §3） |
+| 只有「常用语」/逐条手动添加的（多数手机版） | `astock_words.txt` 或 `custom_phrase_astock.txt` | 搜到需要的股票名，一条一条加进去；自己跑的话用 `--stocks` 先缩成自选股（见 §3.3） |
 
 zip 里的 `README-导入说明.txt` 是同一份说明的纯文本版；细节（回滚、手机端、常见问题）见
 [docs/import-guide.md](docs/import-guide.md)。
