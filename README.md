@@ -7,17 +7,17 @@ A 股股票名的**输入法自定义短语词库**：敲 `payh` 出「平安银
 
 ![license](https://img.shields.io/badge/license-MIT-green.svg)
 ![python](https://img.shields.io/badge/python-3.9%20%7C%203.12-blue.svg)
-<!-- 换成自己的用户名：![build](https://github.com/<你的用户名>/astock-ime/actions/workflows/build.yml/badge.svg) -->
+![build](https://github.com/jcone211/astock-ime/actions/workflows/build.yml/badge.svg)
 
 ---
 
 ## 1. 拿来就用（推荐路径）
 
-👉 **[Releases](../../releases/latest)** 下载最新的 `astock-ime-vYYYY.MM.DD.zip`，解压后按你用的输入法导入**一个文件**：
+👉 **[Releases](https://github.com/jcone211/astock-ime/releases/latest)** 下载最新的 `astock-ime-vYYYY.MM.DD.zip`，解压后按你用的输入法导入**一个文件**：
 
 | 输入法 | 导入这个文件 | 在哪导入 |
 |---|---|---|
-| **微软拼音**（Win10/11 自带） | `ms_pinyin_astock.dat` | 设置 → 时间和语言 → 中文 → 微软拼音 → 选项 → 词库和自学习 → 用户自定义短语 → 导入 |
+| **微软拼音**（Win10/11 自带） | `ms_pinyin_astock.dat` | 右下角微软输入法右键点击 → 词库和自学习 → 用户自定义短语 → 导入 |
 | **微信输入法** | `wechat_astock_words.txt` | 输入法设置 → 词库 → 导入本地词库（手机端同） |
 | **搜狗输入法** | `sogou_astock.txt`（GBK，别另存为 UTF-8） | 属性设置 → 词库 → 导入词库；没有该入口就用 `custom_phrase_astock.txt` |
 
@@ -54,7 +54,7 @@ flowchart LR
 ### 3.1 装环境
 
 ```bash
-git clone <仓库地址> astock-ime && cd astock-ime
+git clone https://github.com/jcone211/astock-ime.git astock-ime && cd astock-ime
 pip install -r requirements.txt          # pypinyin + psycopg2-binary
 cp config.example.json config.json       # config.json 已被 gitignore，密码不进仓库
 ```
@@ -104,7 +104,7 @@ python build.py release --dry-run                     # 只看将执行哪些 gi
 
 ---
 
-## 4. 编码规则（一句话版）
+## 4. 编码规则
 
 ```text
 剔除星号 * → 只留汉字/字母/数字 → pypinyin 整词取拼音首字母 → 统一小写 → 校验 ^[a-z0-9]{2,16}$
@@ -117,24 +117,5 @@ python build.py release --dry-run                     # 只看将执行哪些 gi
 
 ---
 
-## 5. 仓库速览
-
-```text
-build.py            入口：export / build / convert / all / release
-src/astock_ime/     pinyin（编码）· phrase（词条与文本格式）· db（取数）
-                  imewl（调深蓝 + 回读校验）· release（打包与发布）· cli / config
-docs/               import-guide（导入）· automation（周任务接线）· formats（格式与规则）
-examples/ tests/    离线样例、编码规则单测；.github/workflows 跑 CI 并上传 artifact
-```
-
-```bash
-python -m unittest discover -s tests -v      # 本地跑测试
-```
-
----
-
-## 6. 说明
-
-* **不调用 Tushare 接口**（限额太紧，一天可能就 1 次）；本项目只 `SELECT` 读库，密码只从环境变量进，全程无上传、无埋点。
-* 只覆盖 A 股股票简称，不含港股/美股/基金/转债；多音字取整词最可能读音，个别票名可能和你直觉不符。
-* 股票名称属公开信息；**本项目不构成任何投资建议**。代码 MIT，见 [LICENSE](LICENSE) 与 [CHANGELOG.md](CHANGELOG.md)。
+代码 MIT（[LICENSE](LICENSE)）· 全程只 `SELECT` 读本地库，**不调用 Tushare 接口** ·
+词库由周定时任务自动生成，导入指南见 [docs/import-guide.md](docs/import-guide.md)。

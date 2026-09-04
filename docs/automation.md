@@ -44,7 +44,7 @@ Windows 侧要能非交互取到库密码，二选一：
 再加一个执行命令的步骤，同一周任务里串行跑：
 
 ```bash
-cd /c/Users/<你>/Desktop/temp/test/已处理/股票词库/astock-ime && \
+cd /c/Users/19459/Desktop/temp/test/已处理/股票词库/astock-ime && \
   python build.py release --targets win10mspy,mspy 2>&1 | tee -a logs/release-$(date +%F).log
 ```
 
@@ -54,7 +54,7 @@ cd /c/Users/<你>/Desktop/temp/test/已处理/股票词库/astock-ime && \
 如果你的任务面板只能填 Windows 计划任务式命令行，等价写法：
 
 ```bat
-cmd /c "cd /d C:\Users\<你>\Desktop\temp\test\已处理\股票词库\astock-ime && python build.py release > logs\release.log 2>&1"
+cmd /c "cd /d C:\Users\19459\Desktop\temp\test\已处理\股票词库\astock-ime && python build.py release > logs\release.log 2>&1"
 ```
 
 > `logs/` 目录已被 `.gitignore` 忽略，随便写。
