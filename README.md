@@ -121,7 +121,4 @@ python build.py release --dry-run                     # 只看将执行哪些 gi
 146 个编码带大写；新 `.dat` 是 5552 条、全小写，而且每次转换都会把产物**回读校验**
 （`[verify] 回读 5552/5552`）。完整对照表与复现过程见 [docs/formats.md](docs/formats.md)。
 
----
-
-代码 MIT（[LICENSE](LICENSE)）· 全程只 `SELECT` 读本地库，**不调用 Tushare 接口** ·
 词库由周定时任务自动生成，导入指南见 [docs/import-guide.md](docs/import-guide.md)。
